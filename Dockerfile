@@ -5,7 +5,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copie le JAR dans l'image Docker
-COPY Lab2_LOG430.jar app.jar
+COPY LAB2_LOG430.jar app.jar
 
 # Commande à exécuter quand le conteneur démarre
 ENTRYPOINT ["java", "-jar", "app.jar"]
