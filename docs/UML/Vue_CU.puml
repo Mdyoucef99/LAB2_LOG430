@@ -1,0 +1,26 @@
+@startuml Cas d'utilisation
+
+left to right direction
+
+actor Utilisateur
+
+actor  "Base de données" as DB
+
+package "POS" {
+  usecase "CU 1 : Rechercher produit" as U1
+  usecase "CU 2 : Enregistrer vente" as U2
+  usecase "CU 3 : Annuler vente" as U3
+  usecase "CU 4 : Consulter stock" as U4
+}
+
+Utilisateur --> U1
+Utilisateur --> U2
+Utilisateur --> U3
+Utilisateur --> U4
+
+U1 -- DB
+U2 -- DB
+U3 -- DB
+U4 -- DB
+
+@enduml

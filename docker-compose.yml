@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    container_name: lab2_postgres
+    environment:
+      POSTGRES_DB: magasin
+      POSTGRES_USER: magasin_user
+      POSTGRES_PASSWORD: magasinpswd
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: lab2_api
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+    stdin_open: true
+    tty: true
+
+volumes:
+  db_data:

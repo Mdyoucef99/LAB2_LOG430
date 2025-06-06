@@ -1,0 +1,17 @@
+# Build artifacts
+target/
+build/
+*.class
+
+# IDE metadata
+.idea/
+*.iml
+.vscode/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Dependency caches (if present)
+.maven/
+.gradle/
