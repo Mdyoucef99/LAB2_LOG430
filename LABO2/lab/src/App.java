@@ -1,3 +1,5 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import org.postgresql.util.PSQLException;
@@ -5,6 +7,8 @@ import org.postgresql.util.PSQLException;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
+
+import java.sql.Statement;
 
 
 public class App {
@@ -19,22 +23,18 @@ public class App {
             String password = "magasinpswd";
             ConnectionSource cs = new JdbcConnectionSource(databaseUrl, user, password);
 
-          
-            // 2) Création des tables + séquences une seule fois
+
             Class<?>[] models = { Store.class, Produit.class, Stock.class, Sale.class };
             for (Class<?> model : models) {
-                try {
-                    TableUtils.createTableIfNotExists(cs, model);
-                } catch (SQLException e) {
-                    Throwable cause = e.getCause();
-                    if (cause instanceof PSQLException
-                        && "42P07".equals(((PSQLException) cause).getSQLState())) {
-                        // ignore "duplicate_table" or "duplicate_sequence"
-                    } else {
-                        throw e;
-                    }
-                }
+             try {
+             TableUtils.createTableIfNotExists(cs, model);
+            } catch (SQLException e) {
+              if (!(e.getCause() instanceof PSQLException
+              && "42P07".equals(((PSQLException)e.getCause()).getSQLState()))) {
+            throw e;
+             }
             }
+        }
 
             StoreDao storeDao = new StoreDao(cs);
             ProduitDao produitDao = new ProduitDao(cs);
