@@ -4,7 +4,7 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "stocks")
 public class Stock {
     
-     @DatabaseField(generatedId = true)
+    @DatabaseField(generatedId = true)
     private int id;
 
     @DatabaseField(foreign = true, columnName = "store_id", canBeNull = false, uniqueCombo = true)

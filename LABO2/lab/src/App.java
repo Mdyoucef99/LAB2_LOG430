@@ -29,9 +29,9 @@ public class App {
              try {
              TableUtils.createTableIfNotExists(cs, model);
             } catch (SQLException e) {
-              if (!(e.getCause() instanceof PSQLException
-              && "42P07".equals(((PSQLException)e.getCause()).getSQLState()))) {
-            throw e;
+              if (!(e.getCause() instanceof PSQLException && "42P07".equals(((PSQLException)e.getCause()).getSQLState())))
+               {
+               throw e;
              }
             }
         }
