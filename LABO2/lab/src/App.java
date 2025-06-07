@@ -21,20 +21,55 @@ public class App {
 
             String user = "magasin_user";
             String password = "magasinpswd";
-            ConnectionSource cs = new JdbcConnectionSource(databaseUrl, user, password);
 
 
-            Class<?>[] models = { Store.class, Produit.class, Stock.class, Sale.class };
-            for (Class<?> model : models) {
-             try {
-             TableUtils.createTableIfNotExists(cs, model);
-            } catch (SQLException e) {
-              if (!(e.getCause() instanceof PSQLException && "42P07".equals(((PSQLException)e.getCause()).getSQLState())))
-               {
-               throw e;
-             }
-            }
+             // 2) Raw JDBC DDL: sequences + tables, IF NOT EXISTS
+        try (Connection conn = DriverManager.getConnection(databaseUrl, user, password);
+             Statement  st   = conn.createStatement()) {
+
+            // sequences
+            st.execute("CREATE SEQUENCE IF NOT EXISTS stores_id_seq;");
+            st.execute("CREATE SEQUENCE IF NOT EXISTS produits_id_seq;");
+            st.execute("CREATE SEQUENCE IF NOT EXISTS stocks_id_seq;");
+            st.execute("CREATE SEQUENCE IF NOT EXISTS sales_id_seq;");
+
+            // tables
+            st.execute("""
+                CREATE TABLE IF NOT EXISTS stores (
+                  id integer PRIMARY KEY DEFAULT nextval('stores_id_seq'),
+                  name varchar(255) NOT NULL
+                )
+            """);
+            st.execute("""
+                CREATE TABLE IF NOT EXISTS produits (
+                  id integer PRIMARY KEY DEFAULT nextval('produits_id_seq'),
+                  nom varchar(255),
+                  categorie varchar(255),
+                  prix double precision,
+                  quantite integer
+                )
+            """);
+            st.execute("""
+                CREATE TABLE IF NOT EXISTS stocks (
+                  id integer PRIMARY KEY DEFAULT nextval('stocks_id_seq'),
+                  store_id integer NOT NULL REFERENCES stores(id),
+                  product_id integer NOT NULL REFERENCES produits(id),
+                  quantity integer NOT NULL
+                )
+            """);
+            st.execute("""
+                CREATE TABLE IF NOT EXISTS sales (
+                  id integer PRIMARY KEY DEFAULT nextval('sales_id_seq'),
+                  store_id integer NOT NULL REFERENCES stores(id),
+                  product_id integer NOT NULL REFERENCES produits(id),
+                  quantity integer NOT NULL,
+                  saleDate timestamp NOT NULL
+                )
+            """);
         }
+      
+            // 3) ORMLite setup
+            ConnectionSource cs = new JdbcConnectionSource(databaseUrl, user, password);
 
             StoreDao storeDao = new StoreDao(cs);
             ProduitDao produitDao = new ProduitDao(cs);
