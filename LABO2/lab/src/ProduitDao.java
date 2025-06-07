@@ -13,6 +13,10 @@ public class ProduitDao {
         produitDao = DaoManager.createDao(connectionSource, Produit.class);
     }
 
+      public Dao<Produit, Integer> getDao() {
+        return produitDao;
+    }
+
     public void ajouterProduit(Produit p) throws SQLException {
         produitDao.createIfNotExists(p);
     }

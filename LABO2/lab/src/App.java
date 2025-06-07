@@ -1,3 +1,7 @@
+import java.sql.SQLException;
+
+import org.postgresql.util.PSQLException;
+
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
@@ -13,26 +17,107 @@ public class App {
 
             String user = "magasin_user";
             String password = "magasinpswd";
-            ConnectionSource connectionSource = new JdbcConnectionSource(databaseUrl, user, password);
+            ConnectionSource cs = new JdbcConnectionSource(databaseUrl, user, password);
 
-            // Crée la table si elle n'existe pas
-            TableUtils.createTableIfNotExists(connectionSource, Produit.class);
-
-            ProduitDao dao = new ProduitDao(connectionSource);
-
-            //Initialiser quelques produits (uniquement si la table est vide)
-            if (dao.getInventaire().isEmpty()) {
-                dao.ajouterProduit(new Produit(1, "Pain", "Nourriture", 2.5, 100));
-                dao.ajouterProduit(new Produit(2, "Lait", "Nourriture", 1.8, 50));
-                dao.ajouterProduit(new Produit(3, "Savon", "Autre", 3.2, 30));
+          
+            // 2) Création des tables + séquences une seule fois
+            Class<?>[] models = { Store.class, Produit.class, Stock.class, Sale.class };
+            for (Class<?> model : models) {
+                try {
+                    TableUtils.createTableIfNotExists(cs, model);
+                } catch (SQLException e) {
+                    Throwable cause = e.getCause();
+                    if (cause instanceof PSQLException
+                        && "42P07".equals(((PSQLException) cause).getSQLState())) {
+                        // ignore "duplicate_table" or "duplicate_sequence"
+                    } else {
+                        throw e;
+                    }
+                }
             }
 
-            //Lancer un thread de caisse
-            System.out.println("Lancement de la caisse...");
-            Thread caisse1 = new Thread(new CaisseService(dao));
-            caisse1.start();
-            caisse1.join();
+            StoreDao storeDao = new StoreDao(cs);
+            ProduitDao produitDao = new ProduitDao(cs);
+            StockDao stockDao = new StockDao(cs);
+            SaleDao saleDao = new SaleDao(cs);
 
+            if (storeDao.listAll().isEmpty()) {
+                for (int i = 1; i <= 5; i++) {
+                    storeDao.create(new Store("Magasin " + i));
+                }
+                storeDao.create(new Store("Logistique"));
+                storeDao.create(new Store("Maison-Mère"));
+            }
+
+            if (produitDao.getInventaire().isEmpty()) {
+                produitDao.ajouterProduit(new Produit(1, "Pain", "Nourriture", 2.5, 100));
+                produitDao.ajouterProduit(new Produit(2, "Lait", "Nourriture", 1.8, 50));
+                produitDao.ajouterProduit(new Produit(3, "Savon", "Hygiène", 3.2, 30));
+            }
+
+            for (Store s : storeDao.listAll()) {
+                for (Produit p : produitDao.getInventaire()) {
+                    stockDao.updateQuantity(s, p, p.getQuantite());
+                }
+            }
+
+            java.util.Scanner sc = new java.util.Scanner(System.in);
+            while (true) {
+                System.out.println("=== MENU PRINCIPAL ===");
+                System.out.println("1. Caisse (magasin)");
+                System.out.println("2. Centre logistique (UC2)");
+                System.out.println("3. Maison-Mère (UC1 & UC3)");
+                System.out.println("0. Quitter");
+                System.out.print("Choix: ");
+
+                int choice = sc.nextInt();
+                sc.nextLine();
+
+                switch (choice) {
+                    case 1: {
+                        System.out.print("ID magasin (1-5): ");
+                        int mid = sc.nextInt();
+                        sc.nextLine();
+                        Store magasin = storeDao.findById(mid);
+                        Thread caisseThread = new Thread(
+                            new CaisseService(magasin, produitDao, stockDao, saleDao)
+                        );
+                        caisseThread.start();
+                        caisseThread.join();
+                        break;
+                    }
+                    case 2: {
+                        System.out.print("Produit ID: ");
+                        int pid = sc.nextInt();
+                        System.out.print("Quantité: ");
+                        int qty = sc.nextInt();
+                        System.out.print("Magasin cible (1-5): ");
+                        int tid = sc.nextInt();
+                        new StockController(
+                            new StockService(stockDao), storeDao, produitDao
+                        ).reorder(pid, qty, tid);
+                        break;
+                    }
+                    case 3: {
+                        new ReportController(
+                            new ReportService(saleDao), storeDao, produitDao
+                        ).printConsolidatedReport();
+
+                        new DashboardController(
+                            new DashboardService(saleDao, storeDao, produitDao)
+                        ).showDashboard();
+                        break;
+                    }
+                    case 0:
+                        System.out.println("Au revoir !");
+                        System.exit(0);
+                    default:
+                        System.out.println("Choix invalide.");
+                }
+            }
+
+
+        
         } catch (Exception e) {
             e.printStackTrace();
         }

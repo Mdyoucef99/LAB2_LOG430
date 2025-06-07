@@ -1,0 +1,44 @@
+
+import java.sql.SQLException;
+import java.util.List;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.DaoManager;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.support.ConnectionSource;
+
+public class StockDao {
+      private final Dao<Stock,Void> dao;
+
+    public StockDao(ConnectionSource cs) throws SQLException {
+        this.dao = DaoManager.createDao(cs, Stock.class);
+    }
+
+      public Dao<Stock,Void> getDao() {
+        return dao;
+    }
+
+    public Stock getStock(Store store, Produit p) throws SQLException {
+        QueryBuilder<Stock,Void> qb = dao.queryBuilder();
+        qb.where()
+          .eq("store_id", store.getId())
+          .and()
+          .eq("product_id", p.getId());
+        return dao.queryForFirst(qb.prepare());
+    }
+
+    public void updateQuantity(Store store, Produit p, int delta) throws SQLException {
+        Stock s = getStock(store, p);
+        if (s == null) {
+            dao.create(new Stock(store, p, delta));
+        } else {
+            s.setQuantity(s.getQuantity() + delta);
+            dao.update(s);
+        }
+    }
+
+    public List<Stock> listByStore(Store store) throws SQLException {
+        return dao.queryForEq("store_id", store.getId());
+    }
+
+
+}
