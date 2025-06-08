@@ -24,7 +24,7 @@ public class StockDao {
           .and()
           .eq("product_id", p.getId());
         return dao.queryForFirst(qb.prepare());
-    }
+    }   
 
     public void updateQuantity(Store store, Produit p, int delta) throws SQLException {
         Stock s = getStock(store, p);
@@ -39,6 +39,10 @@ public class StockDao {
     public List<Stock> listByStore(Store store) throws SQLException {
         return dao.queryForEq("store_id", store.getId());
     }
+
+    public List<Stock> getAll() throws SQLException {
+    return dao.queryForAll();
+}
 
 
 }
