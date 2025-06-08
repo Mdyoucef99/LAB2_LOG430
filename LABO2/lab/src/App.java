@@ -1,13 +1,38 @@
+import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.DriverManager;  
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
-
 import java.sql.Statement;
 
 
+
 public class App {
+ 
+     private static void filterDebug() {
+        PrintStream origErr = System.err;
+        System.setErr(new PrintStream(origErr) {
+            @Override
+            public void println(String s) {
+                if (s != null && s.contains("[DEBUG]")) return;
+                super.println(s);
+            }
+        });
+
+        PrintStream origOut = System.out;
+        System.setOut(new PrintStream(origOut) {
+            @Override
+            public void println(String s) {
+                if (s != null && s.contains("[DEBUG]")) return;
+                super.println(s);
+            }
+        });
+    }
+
+
     public static void main(String[] args) {
+
+        filterDebug();
         try {
            
             //get the environement we are using whether be it local or on docker 
@@ -17,9 +42,8 @@ public class App {
             String user = "magasin_user";
             String password = "magasinpswd";
 
-
              // 2) Raw JDBC DDL: sequences + tables, IF NOT EXISTS
-        try (Connection conn = DriverManager.getConnection(databaseUrl, user, password);
+            try (Connection conn = DriverManager.getConnection(databaseUrl, user, password);
              Statement  st   = conn.createStatement()) {
 
             // sequences
@@ -65,7 +89,6 @@ public class App {
       
             // 3) ORMLite setup
             ConnectionSource cs = new JdbcConnectionSource(databaseUrl, user, password);
-
             StoreDao storeDao = new StoreDao(cs);
             ProduitDao produitDao = new ProduitDao(cs);
             StockDao stockDao = new StockDao(cs);
@@ -85,11 +108,13 @@ public class App {
                 produitDao.ajouterProduit(new Produit(3, "Savon", "Hygiène", 3.2, 30));
             }
 
-            for (Store s : storeDao.listAll()) {
+           for (Store s : storeDao.listAll()) {
+             if (stockDao.listByStore(s).isEmpty()) {
                 for (Produit p : produitDao.getInventaire()) {
-                    stockDao.updateQuantity(s, p, p.getQuantite());
+                 stockDao.updateQuantity(s, p, p.getQuantite());
                 }
-            }
+            }}
+             
 
             java.util.Scanner sc = new java.util.Scanner(System.in);
             while (true) {
@@ -127,8 +152,11 @@ public class App {
                         break;
                     }
                     case 3: {
-                        new ReportController(new ReportService(saleDao), storeDao, produitDao ).printConsolidatedReport();
+
+                        new ReportController(new ReportService(saleDao), storeDao, produitDao,stockDao ).printConsolidatedReport();
+
                         new DashboardController(new DashboardService(saleDao, storeDao, produitDao) ).showDashboard();
+
                         break;
                     }
                     case 0:
@@ -138,7 +166,6 @@ public class App {
                         System.out.println("Choix invalide.");
                 }
             }
-
         
         } catch (Exception e) {
             e.printStackTrace();
