@@ -1,4 +1,11 @@
+package Service;
 import java.util.Scanner;
+
+import dao.*;
+import Model.Produit;
+import Model.Stock;
+import Model.Store;
+
 import java.sql.SQLException;
 import java.util.List;
 

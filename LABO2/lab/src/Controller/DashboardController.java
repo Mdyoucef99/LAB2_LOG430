@@ -1,8 +1,16 @@
+package Controller;
+
+
 import java.sql.SQLException;
 import java.util.List;
 
-public class DashboardController {
+import dao.*;
+import Model.Sale;
+import Model.Stock;
+import Model.Store;
 
+
+public class DashboardController {
 
     private final StoreDao   storeDao;
     private final ProduitDao produitDao;
@@ -18,7 +26,6 @@ public class DashboardController {
         this.stockDao   = stockDao;
         this.saleDao    = saleDao;
     }
-
 
     public void showDashboard() {
         try {
@@ -38,7 +45,6 @@ public class DashboardController {
 
                  System.out.printf("%s : %.2f $%n", s.getName(), revenue);
             }
-
 
             // 2) Alertes de rupture de stock
             System.out.println("\n-- Alertes de rupture de stock --");

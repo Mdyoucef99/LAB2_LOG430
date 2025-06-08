@@ -1,9 +1,20 @@
+package View;
 import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.DriverManager;  
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
+
+import Controller.DashboardController;
+import Controller.ReportController;
+import Controller.StockController;
+import Model.Produit;
+import Model.Store;
+import Service.CaisseService;
+import Service.StockService;
+
 import java.sql.Statement;
+import dao.*;
 
 
 

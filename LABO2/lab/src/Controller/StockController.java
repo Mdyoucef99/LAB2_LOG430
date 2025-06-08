@@ -1,4 +1,9 @@
+package Controller;
 
+import Model.Produit;
+import Model.Store;
+import Service.StockService;
+import dao.*;
 
 public class StockController {
     private final StockService stockService;
@@ -14,7 +19,7 @@ public class StockController {
     public void reorder(int prodId, int qty, int storeId) {
         try {
             Produit p = produitDao.rechercherParId(prodId);
-            Store central = storeDao.findById(6);
+            Store central = storeDao.findById(6);//hardcoded for now since the centre de logistique is number 6 
             Store mag = storeDao.findById(storeId);
             stockService.reorder(central, mag, p, qty);
             System.out.println("Réapprovisionnement effectué.");

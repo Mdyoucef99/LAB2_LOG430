@@ -1,4 +1,9 @@
+package Service;
 import java.sql.SQLException;
+
+import dao.*;
+import Model.Produit;
+import Model.Store;
 
 public class StockService {
     private final StockDao stockDao;
