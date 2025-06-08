@@ -10,7 +10,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 
-
 public class CaisseService implements Runnable {
     private final Store store;
     private final ProduitDao produitDao;
@@ -80,7 +79,6 @@ public class CaisseService implements Runnable {
                 System.out.println("Vente enregistrée.");
             }
             break;
-
 
             case "3":
             System.out.print("ID produit: ");

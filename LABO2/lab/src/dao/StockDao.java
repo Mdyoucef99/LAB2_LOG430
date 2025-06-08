@@ -1,3 +1,5 @@
+package dao;
+
 
 import java.sql.SQLException;
 import java.util.List;
@@ -5,6 +7,10 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
+
+import Model.Produit;
+import Model.Stock;
+import Model.Store;
 
 public class StockDao {
       private final Dao<Stock,Void> dao;

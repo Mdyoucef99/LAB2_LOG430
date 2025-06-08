@@ -1,3 +1,4 @@
+package Model;
 public class SaleReport {
     private final String storeName;
     private final String productName;

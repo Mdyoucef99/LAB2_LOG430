@@ -1,8 +1,13 @@
+package dao;
+
+
 import java.sql.SQLException;
 import java.util.List;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.support.ConnectionSource;
+
+import Model.Store;
 
 public class StoreDao {
     private final Dao<Store,Integer> dao;

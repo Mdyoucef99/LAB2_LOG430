@@ -1,6 +1,13 @@
+package Controller;
+
 
 import java.sql.SQLException;
 import java.util.List;
+
+import dao.*;
+import Model.SaleReport;
+import Model.Stock;
+import Model.Store;
 
 
 public class ReportController {
@@ -21,7 +28,7 @@ public class ReportController {
 
     public void printConsolidatedReport() {
         try {
-            
+
             // 1) Détail des ventes par magasin et produit
             List<SaleReport> sales = saleDao.consolidatedReport(storeDao, produitDao);
             System.out.println("\n=== Ventes détaillées par magasin ===");
