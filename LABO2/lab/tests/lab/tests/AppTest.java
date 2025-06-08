@@ -12,7 +12,7 @@ import Model.Store;
 
 public class AppTest {
 
-     @Test
+    @Test
     public void ProduitConstructeurEtGetters() {
         Produit p = new Produit(42, "Chocolat", "Alimentaire", 3.5, 10);
         assertEquals(42, p.getId());
@@ -22,7 +22,7 @@ public class AppTest {
         assertEquals(10, p.getQuantite());
     }
 
-
+    @Test
     public void StockConstructeurEtGetters() {
         Store s = new Store("S1");
         Produit p = new Produit(5, "Savon", "Hygiène", 1.2, 20);
@@ -32,7 +32,7 @@ public class AppTest {
         assertEquals(p, stock.getProduit());
         assertEquals(15, stock.getQuantity());
     }
-    
+
 
     @Test
     public void SaleConstructeurEtGetters() {
