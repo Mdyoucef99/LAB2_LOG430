@@ -4,11 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
-
+/* 
 import Model.Produit;
 import Model.Sale;
 import Model.Stock;
 import Model.Store;
+*/
 
 public class AppTest {
 
