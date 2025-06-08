@@ -18,7 +18,7 @@ public class Sale {
     @DatabaseField(canBeNull = false)
     private int quantity;
 
-    @DatabaseField(canBeNull = false)
+    @DatabaseField(columnName = "saleDate",canBeNull = false)
     private Date saleDate;
 
     public Sale() { }

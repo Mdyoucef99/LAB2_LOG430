@@ -1,12 +1,7 @@
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-
-import org.postgresql.util.PSQLException;
-
+import java.sql.DriverManager;  
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
 
 import java.sql.Statement;
 
@@ -110,7 +105,7 @@ public class App {
 
                 switch (choice) {
                     case 1: {
-                        System.out.print("ID magasin (1-5): ");
+                        System.out.print("ID magasin (1-5):");
                         int mid = sc.nextInt();
                         sc.nextLine();
                         Store magasin = storeDao.findById(mid);
@@ -128,19 +123,12 @@ public class App {
                         int qty = sc.nextInt();
                         System.out.print("Magasin cible (1-5): ");
                         int tid = sc.nextInt();
-                        new StockController(
-                            new StockService(stockDao), storeDao, produitDao
-                        ).reorder(pid, qty, tid);
+                        new StockController(new StockService(stockDao), storeDao, produitDao).reorder(pid, qty, tid);
                         break;
                     }
                     case 3: {
-                        new ReportController(
-                            new ReportService(saleDao), storeDao, produitDao
-                        ).printConsolidatedReport();
-
-                        new DashboardController(
-                            new DashboardService(saleDao, storeDao, produitDao)
-                        ).showDashboard();
+                        new ReportController(new ReportService(saleDao), storeDao, produitDao ).printConsolidatedReport();
+                        new DashboardController(new DashboardService(saleDao, storeDao, produitDao) ).showDashboard();
                         break;
                     }
                     case 0:
@@ -150,7 +138,6 @@ public class App {
                         System.out.println("Choix invalide.");
                 }
             }
-
 
         
         } catch (Exception e) {

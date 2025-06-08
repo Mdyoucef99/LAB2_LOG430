@@ -30,50 +30,75 @@ public class CaisseService implements Runnable {
             System.out.print("Choix: ");
 
             String input = sc.nextLine();
-            try {
-                switch (input) {
-                    case "1":
-                        System.out.print("Nom ou catégorie: ");
-                        String keyword = sc.nextLine();
-                        List<Produit> byName = produitDao.rechercherParNom(keyword);
-                        byName.forEach(System.out::println);
-                        List<Produit> byCat = produitDao.rechercherParCategorie(keyword);
-                        byCat.forEach(System.out::println);
-                        break;
+    try {
+             switch (input) {
+             case "1":
+            // Afficher le stock d’un produit par son ID pour le magasin courant
+            System.out.print("ID produit: ");
+            int pidLookup = Integer.parseInt(sc.nextLine());
+            Produit pLookup = produitDao.rechercherParId(pidLookup);
+            if (pLookup == null) {
+                System.out.println("Produit introuvable.");
+            } else {
+                Stock stockLookup = stockDao.getStock(store, pLookup);
+                int available = (stockLookup != null) ? stockLookup.getQuantity() : 0;
+                System.out.printf(
+                    "Produit %d - %s : %d en stock dans %s%n",
+                    pLookup.getId(),
+                    pLookup.getNom(),
+                    available,
+                    store.getName()
+                );
+            }
+            break;
 
-                    case "2":
-                        System.out.print("ID produit: ");
-                        int idV = Integer.parseInt(sc.nextLine());
-                        System.out.print("Quantité vendue: ");
-                        int qV = Integer.parseInt(sc.nextLine());
-                        produitDao.enregistrerVente(idV, qV);
-                        Produit sold = produitDao.rechercherParId(idV);
-                        stockDao.updateQuantity(store, sold, -qV);
-                        saleDao.recordSale(store, sold, qV);
-                        break;
+            case "2":
+            System.out.print("ID produit: ");
+            int pid = Integer.parseInt(sc.nextLine());
+            System.out.print("Quantité vendue: ");
+            int qty = Integer.parseInt(sc.nextLine());
 
-                    case "3":
-                        System.out.print("ID produit: ");
-                        int idR = Integer.parseInt(sc.nextLine());
-                        System.out.print("Quantité à retourner: ");
-                        int qR = Integer.parseInt(sc.nextLine());
-                        produitDao.annulerVente(idR, qR);
-                        Produit returned = produitDao.rechercherParId(idR);
-                        stockDao.updateQuantity(store, returned, qR);
-                        break;
+            Produit p = produitDao.rechercherParId(pid);
+            Stock s = stockDao.getStock(store, p);
 
-                    case "4":
-                        List<Produit> inventaire = produitDao.getInventaire();
-                        inventaire.forEach(System.out::println);
-                        break;
+            if (s == null || s.getQuantity() < qty) {
+                System.out.println("Stock insuffisant pour la vente.");
+            } else {
+                stockDao.updateQuantity(store, p, -qty);
+                saleDao.recordSale(store, p, qty);
+                System.out.println("Vente enregistrée.");
+            }
+            break;
 
-                    case "0":
-                        return;
+             case "3":
+            System.out.print("ID produit: ");
+            int pidR = Integer.parseInt(sc.nextLine());
+            System.out.print("Quantité à retourner: ");
+            int qtyR = Integer.parseInt(sc.nextLine());
 
-                    default:
-                        System.out.println("Choix invalide.");
-                }
-            } catch (SQLException e) {
+            Produit pR = produitDao.rechercherParId(pidR);
+            stockDao.updateQuantity(store, pR, +qtyR);
+            System.out.println("Retour enregistré.");
+            break;
+
+             case "4":
+            List<Stock> inv = stockDao.listByStore(store);
+            inv.forEach(stock -> System.out.printf(
+                "%d - %s : %d en stock%n",
+                stock.getProduit().getId(),
+                stock.getProduit().getNom(),
+                stock.getQuantity()
+            ));
+            break;
+
+        case "0":
+            return;
+
+        default:
+            System.out.println("Choix invalide.");
+            break;
+    }
+} catch (SQLException e) {
                 System.out.println("Erreur base de données: " + e.getMessage());
             }
         }

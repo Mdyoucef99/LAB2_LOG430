@@ -6,7 +6,12 @@ public class ReportController {
     private final ReportService service;
     private final StoreDao storeDao;
     private final ProduitDao produitDao;
-    public ReportController(ReportService svc,StoreDao sd,ProduitDao pd){this.service=svc;this.storeDao=sd;this.produitDao=pd;}
+    public ReportController(ReportService svc,StoreDao sd,ProduitDao pd)
+    {
+        this.service=svc;
+        this.storeDao=sd;
+        this.produitDao=pd;
+    }
     public void printConsolidatedReport(){
         try{
             List<SaleReport> data=service.generateReport(storeDao,produitDao);

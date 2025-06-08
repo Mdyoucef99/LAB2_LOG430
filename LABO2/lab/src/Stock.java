@@ -7,10 +7,10 @@ public class Stock {
     @DatabaseField(generatedId = true)
     private int id;
 
-    @DatabaseField(foreign = true, columnName = "store_id", canBeNull = false, uniqueCombo = true)
+    @DatabaseField(foreign = true, foreignAutoRefresh = true,  columnName = "store_id", canBeNull = false, uniqueCombo = true)
     private Store store;
 
-    @DatabaseField(foreign = true, columnName = "product_id", canBeNull = false, uniqueCombo = true)
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "product_id", canBeNull = false, uniqueCombo = true)
     private Produit produit;
 
     @DatabaseField(canBeNull = false)
