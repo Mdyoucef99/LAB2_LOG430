@@ -27,12 +27,12 @@ public class StockDao {
     }   
 
     public void updateQuantity(Store store, Produit p, int delta) throws SQLException {
-        Stock s = getStock(store, p);
-        if (s == null) {
+        Stock stock = getStock(store, p);
+        if (stock == null) {
             dao.create(new Stock(store, p, delta));
         } else {
-            s.setQuantity(s.getQuantity() + delta);
-            dao.update(s);
+            stock.setQuantity(stock.getQuantity() + delta);
+            dao.update(stock);
         }
     }
 

@@ -115,8 +115,8 @@ public class App {
                 }
             }}
              
-
             java.util.Scanner sc = new java.util.Scanner(System.in);
+
             while (true) {
                 System.out.println("=== MENU PRINCIPAL ===");
                 System.out.println("1. Caisse (magasin)");
@@ -142,20 +142,22 @@ public class App {
                         break;
                     }
                     case 2: {
+
                         System.out.print("Produit ID: ");
                         int pid = sc.nextInt();
                         System.out.print("Quantité: ");
                         int qty = sc.nextInt();
                         System.out.print("Magasin cible (1-5): ");
                         int tid = sc.nextInt();
+
                         new StockController(new StockService(stockDao), storeDao, produitDao).reorder(pid, qty, tid);
                         break;
                     }
                     case 3: {
 
-                        new ReportController(new ReportService(saleDao), storeDao, produitDao,stockDao ).printConsolidatedReport();
-
-                        new DashboardController(new DashboardService(saleDao, storeDao, produitDao) ).showDashboard();
+                        new ReportController(saleDao, storeDao, produitDao, stockDao).printConsolidatedReport();
+                        
+                        new DashboardController(storeDao, produitDao, stockDao,saleDao).showDashboard();
 
                         break;
                     }

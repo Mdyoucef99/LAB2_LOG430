@@ -32,16 +32,20 @@ public class CaisseService implements Runnable {
             String input = sc.nextLine();
     try {
              switch (input) {
+
              case "1":
-            // Afficher le stock d’un produit par son ID pour le magasin courant
+
             System.out.print("ID produit: ");
             int pidLookup = Integer.parseInt(sc.nextLine());
             Produit pLookup = produitDao.rechercherParId(pidLookup);
+
             if (pLookup == null) {
                 System.out.println("Produit introuvable.");
             } else {
+
                 Stock stockLookup = stockDao.getStock(store, pLookup);
                 int available = (stockLookup != null) ? stockLookup.getQuantity() : 0;
+
                 System.out.printf(
                     "Produit %d - %s : %d en stock dans %s%n",
                     pLookup.getId(),
@@ -70,7 +74,8 @@ public class CaisseService implements Runnable {
             }
             break;
 
-             case "3":
+
+            case "3":
             System.out.print("ID produit: ");
             int pidR = Integer.parseInt(sc.nextLine());
             System.out.print("Quantité à retourner: ");
@@ -81,7 +86,8 @@ public class CaisseService implements Runnable {
             System.out.println("Retour enregistré.");
             break;
 
-             case "4":
+
+            case "4":
             List<Stock> inv = stockDao.listByStore(store);
             inv.forEach(stock -> System.out.printf(
                 "%d - %s : %d en stock%n",

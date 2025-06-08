@@ -9,10 +9,10 @@ public class Sale {
     @DatabaseField(generatedId = true)
     private int id;
 
-    @DatabaseField(foreign = true, columnName = "store_id", canBeNull = false)
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, columnName="store_id")
     private Store store;
 
-    @DatabaseField(foreign = true, columnName = "product_id", canBeNull = false)
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, columnName="product_id")
     private Produit produit;
 
     @DatabaseField(canBeNull = false)

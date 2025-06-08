@@ -1,34 +1,38 @@
 
+import java.sql.SQLException;
 import java.util.List;
 
 
 public class ReportController {
-    private final ReportService service;
-    private final StoreDao storeDao;
+    private final SaleDao    saleDao;
+    private final StoreDao   storeDao;
     private final ProduitDao produitDao;
-    private final StockDao stockDao;
+    private final StockDao   stockDao;
 
-
-    public ReportController(ReportService service, StoreDao storeDao,ProduitDao produitDao, StockDao stockDao) {
-        this.service     = service;
-        this.storeDao    = storeDao;
-        this.produitDao  = produitDao;
-        this.stockDao    = stockDao;
+    public ReportController(SaleDao saleDao,
+                            StoreDao storeDao,
+                            ProduitDao produitDao,
+                            StockDao stockDao) {
+        this.saleDao    = saleDao;
+        this.storeDao   = storeDao;
+        this.produitDao = produitDao;
+        this.stockDao   = stockDao;
     }
 
-    public void printConsolidatedReport(){
-        try{
+    public void printConsolidatedReport() {
+        try {
+            
             // 1) Détail des ventes par magasin et produit
-            List<SaleReport> sales = service.generateReport(storeDao, produitDao);
+            List<SaleReport> sales = saleDao.consolidatedReport(storeDao, produitDao);
             System.out.println("\n=== Ventes détaillées par magasin ===");
-            sales.forEach(r ->
+            for (SaleReport r : sales) {
                 System.out.printf("%s | %s | Qté vendue : %d%n",
                                   r.getStoreName(),
                                   r.getProductName(),
-                                  r.getTotalQty())
-            );
+                                  r.getTotalQty());
+            }
 
-
+            // 2) Stocks restants par magasin
             System.out.println("\n=== Stocks restants par magasin ===");
             for (Store s : storeDao.listAll()) {
                 System.out.printf("Magasin %s :%n", s.getName());
@@ -39,8 +43,9 @@ public class ReportController {
                                       st.getQuantity());
                 }
             }
-
-        }catch(Exception e){e.printStackTrace();}
+        } catch (SQLException e) {
+            System.out.println("Erreur UC1: " + e.getMessage());
+        }
     }
 
 }
